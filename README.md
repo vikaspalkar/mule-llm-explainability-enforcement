@@ -40,6 +40,7 @@ Compatible with **OpenAI Chat Completions**, **Anthropic Messages**, and any Ope
 - Rust toolchain with `wasm32-wasip1` target
 - PDK 1.9.0
 - Anypoint CLI v4 with PDK plugin
+- replace the placeholder <Org-ID> in Cargo.toml and exchange.json with youe own organization's business group ID before publishing.
 
 ---
 
