@@ -242,17 +242,6 @@ Every request generates a trace ID (`X-Explainability-Trace-Id`) that links the 
 
 ---
 
-## LLM Provider Compatibility
-
-| Provider / Endpoint | Injection | Response Validation | Full Support |
-|--------------------|-----------|---------------------|-------------|
-| OpenAI Chat Completions (`/chat/completions`) | ✅ | ✅ | ✅ |
-| OpenAI Responses API (`/responses`) | ✅ | ❌ (SSE pipeline) | Partial |
-| Anthropic Claude (`/messages`) | ✅ | Depends on proxy | Varies |
-| Gemini (OpenAI-compat) | ✅ | Depends on proxy | Varies |
-
----
-
 ## License
 
 Copyright 2025 Salesforce, Inc. All rights reserved.
