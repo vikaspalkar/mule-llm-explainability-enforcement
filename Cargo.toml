@@ -5,7 +5,7 @@ edition = "2021"
 description = "Enforces AI explainability metadata on LLM API responses"
 
 [package.metadata.anypoint]
-group_id = "37289ac4-fbe0-43a3-a3e3-7846cb0153e2"
+group_id = "<Org-ID>"
 definition_asset_id = "llm-explainability-enforcement"
 implementation_asset_id = "llm-explainability-enforcement-wasm"
 
