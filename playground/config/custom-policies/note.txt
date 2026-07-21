@@ -1,0 +1,2 @@
+Compiled policy artifacts (.yaml files) are placed here by `make run`.
+These files are git-ignored and regenerated on each build.

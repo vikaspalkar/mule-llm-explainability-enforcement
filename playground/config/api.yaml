@@ -1,0 +1,43 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: ApiInstance
+metadata:
+  name: ingress-http
+spec:
+  address: http://0.0.0.0:8081
+  services:
+    upstream:
+      address: "http://backend"
+      routes:
+        - config:
+            destinationPath: /
+  policies:
+    - policyRef:
+        name: llm-explainability-enforcement
+        namespace: default
+      config:
+        explainability_fields:
+          - field: "decision_outcome"
+            description: "The final decision made by the LLM"
+            field_type: "string"
+            required: true
+            allowed_values: ["approved", "rejected", "escalated"]
+          - field: "confidence_score"
+            description: "LLM confidence level in its decision"
+            field_type: "number"
+            required: true
+            validation_min: 0.0
+            validation_max: 1.0
+          - field: "reasoning"
+            description: "Key factors that influenced the decision"
+            field_type: "array"
+            required: true
+            validation_min: 1
+          - field: "human_review_required"
+            description: "Whether this decision needs human oversight"
+            field_type: "boolean"
+            required: true
+        prompt_injection_enabled: true
+        prompt_injection_mode: "system_message"
+        validation_on_failure: "block"
+        validation_minimum_compliance_percentage: 100

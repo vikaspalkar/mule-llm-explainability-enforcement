@@ -1,0 +1,79 @@
+# Production configuration for LLM explainability enforcement.
+# Enforces full transparency compliance for regulated AI use cases.
+# Compatible with OpenAI GPT-4, Claude 3.5, and other enterprise LLMs.
+explainability_fields:
+  - field: "decision_outcome"
+    description: "The final decision or recommendation made by the LLM"
+    field_type: "string"
+    required: true
+    allowed_values:
+      - "approved"
+      - "rejected"
+      - "pending_review"
+      - "escalated"
+      - "flagged"
+
+  - field: "confidence_score"
+    description: "LLM's confidence level in its decision (0.0-1.0)"
+    field_type: "number"
+    required: true
+    validation_min: 0.0
+    validation_max: 1.0
+
+  - field: "reasoning"
+    description: "Key factors and evidence that influenced the decision"
+    field_type: "array"
+    required: true
+    validation_min: 1
+    validation_max: 10
+
+  - field: "data_sources_consulted"
+    description: "Data sources, tools, or context the LLM used"
+    field_type: "array"
+    required: true
+    validation_min: 1
+
+  - field: "regulatory_basis"
+    description: "Applicable regulation, policy, or business rule cited"
+    field_type: "string"
+    required: true
+
+  - field: "human_review_required"
+    description: "Whether this decision requires human oversight before acting"
+    field_type: "boolean"
+    required: true
+
+  - field: "appeal_pathway"
+    description: "How the affected party can contest this decision"
+    field_type: "string"
+    required: false
+    required_when_field: "decision_outcome"
+    required_when_equals: "rejected"
+
+  - field: "model_version"
+    description: "LLM model and version used for this decision"
+    field_type: "string"
+    required: true
+
+# Prompt injection configuration
+prompt_injection_enabled: true
+prompt_injection_mode: "system_message"   # Inject as system prompt (best compliance)
+prompt_response_format: "json_block"
+prompt_custom_preamble: >
+  This system operates under AI governance requirements.
+  All LLM responses MUST include structured explainability metadata
+  to ensure transparency, auditability, and regulatory compliance
+  for automated decisions.
+
+# Validation behavior
+validation_on_failure: "block"
+validation_minimum_compliance_percentage: 100
+
+# Audit logging
+audit_log_results: true
+audit_log_full_metadata: true
+audit_include_config_hash: true
+
+# Scope — enforce on all LLM API paths
+scope_enforce_for_paths: []   # Empty = all JSON POST paths
+scope_skip_streaming: true    # Skip streaming requests (stream: true)

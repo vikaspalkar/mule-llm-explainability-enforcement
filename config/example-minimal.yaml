@@ -1,0 +1,20 @@
+# Minimal configuration for llm-explainability-enforcement policy.
+# Uses defaults: block mode, 100% compliance, system_message injection.
+explainability_fields:
+  - field: "decision_outcome"
+    field_type: "string"
+    required: true
+    allowed_values:
+      - "approved"
+      - "rejected"
+      - "escalated"
+
+  - field: "confidence_score"
+    field_type: "number"
+    required: true
+    validation_min: 0.0
+    validation_max: 1.0
+
+  - field: "human_review_required"
+    field_type: "boolean"
+    required: true

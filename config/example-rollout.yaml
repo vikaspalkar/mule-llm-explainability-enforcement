@@ -1,0 +1,60 @@
+# Gradual rollout configuration for llm-explainability-enforcement policy.
+#
+# Strategy: Deploy in log-only mode with 80% compliance threshold to gather
+# baseline data before switching to block mode. This allows teams to:
+#   1. Identify which LLMs already provide explainability fields
+#   2. Measure current compliance rates across the fleet
+#   3. Give teams time to tune their system prompts
+#   4. Build confidence in the policy before enforcement
+#
+# Once baseline compliance exceeds 95%, switch to:
+#   validation_on_failure: "block"
+#   validation_minimum_compliance_percentage: 100
+explainability_fields:
+  - field: "decision_outcome"
+    field_type: "string"
+    required: true
+    allowed_values:
+      - "approved"
+      - "rejected"
+      - "pending_review"
+      - "escalated"
+      - "flagged"
+
+  - field: "confidence_score"
+    field_type: "number"
+    required: true
+    validation_min: 0.0
+    validation_max: 1.0
+
+  - field: "reasoning"
+    field_type: "array"
+    required: true
+    validation_min: 1
+
+  - field: "human_review_required"
+    field_type: "boolean"
+    required: true
+
+  - field: "model_version"
+    field_type: "string"
+    required: true
+
+# Prompt injection configuration
+prompt_injection_enabled: true
+prompt_injection_mode: "system_message"
+prompt_response_format: "json_block"
+
+# Rollout mode: log violations without blocking traffic.
+validation_on_failure: "log_only"
+
+# Accept responses that provide at least 80% of required fields.
+validation_minimum_compliance_percentage: 80
+
+# Audit logging is critical during rollout.
+audit_log_results: true
+audit_log_full_metadata: true
+audit_include_config_hash: true
+
+# Skip streaming requests
+scope_skip_streaming: true

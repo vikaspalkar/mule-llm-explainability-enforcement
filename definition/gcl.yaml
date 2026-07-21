@@ -1,0 +1,128 @@
+---
+apiVersion: gateway.mulesoft.com/v1alpha1
+kind: Extension
+metadata:
+  labels:
+    title: LLM Explainability Enforcement
+    description: >
+      Enforces AI explainability on LLM API responses. Injects a compliance
+      instruction into every LLM request and optionally validates that the
+      response contains the required explainability metadata fields.
+      Supports OpenAI (Chat Completions, Responses API), Anthropic Messages,
+      OpenAI-compatible endpoints, and self-hosted LLMs.
+    category: Compliance
+    metadata/interfaceScope: api
+    metadata/capabilities/assetTypes: llm,http
+spec:
+  extends:
+    - name: extension-definition
+      namespace: default
+  properties:
+    explainability_fields:
+      type: array
+      description: >
+        REQUIRED. Field definitions for required explainability metadata.
+        Each entry defines both the instruction injected into the LLM request
+        AND the validation rule applied to the response.
+        The policy auto-generates a structured compliance prompt from these definitions.
+      items:
+        type: object
+        properties:
+          field:
+            type: string
+            description: Field name in the explainability_metadata JSON object
+          description:
+            type: string
+            description: Human-readable description (included in the injected instruction)
+          field_type:
+            type: string
+            description: Expected data type
+            enum:
+              - string
+              - number
+              - boolean
+              - array
+          required:
+            type: boolean
+            description: Whether the field is mandatory
+            default: true
+          allowed_values:
+            type: array
+            items:
+              type: string
+            description: Allowed string values (empty = any value accepted)
+          validation_min:
+            type: number
+            description: Minimum value for numbers, or minimum item count for arrays
+          validation_max:
+            type: number
+            description: Maximum value for numbers, or maximum item count for arrays
+          required_when_field:
+            type: string
+            description: Make this field required only when another field equals a specific value
+          required_when_equals:
+            type: string
+            description: The value of required_when_field that triggers the conditional requirement
+        required:
+          - field
+          - field_type
+
+    validation_on_failure:
+      type: string
+      description: >
+        Action when LLM response fails validation (only relevant when
+        scope_response_validation_enabled is true).
+        log_only (default): inject instruction + log results, never block traffic.
+        flag: inject + add non-compliant header, pass response through.
+        block: inject + return HTTP 422 error (full enforcement).
+        Start with log_only when onboarding a new LLM provider.
+      enum:
+        - block
+        - flag
+        - log_only
+      default: log_only
+
+    validation_minimum_compliance_percentage:
+      type: integer
+      description: >
+        Minimum percentage of required fields that must be valid (0-100).
+        Use 100 for proven, trusted LLMs. Lower to 80-90 when onboarding a new
+        model or provider to allow a compliance ramp-up period.
+      default: 100
+      minimum: 0
+      maximum: 100
+
+    prompt_custom_preamble:
+      type: string
+      description: >
+        Optional domain context prepended to the generated compliance instruction.
+        Use this to tell the LLM what system it is operating in.
+        Example: "You are a regulated financial AI assistant operating under RBI guidelines."
+        Tip: More specific context improves LLM compliance rates, especially for Gemini and Llama.
+      default: ""
+
+    scope_enforce_for_paths:
+      type: array
+      items:
+        type: string
+      description: >
+        API paths to enforce on. Empty = enforce on all JSON POST paths.
+        Use when the proxy exposes multiple endpoints and you only want to target LLM paths.
+        Example: ["/v1/responses", "/v1/chat/completions"]
+      default: []
+
+    scope_response_validation_enabled:
+      type: boolean
+      description: >
+        Enable response body buffering and validation.
+        false (default) = INJECTION-ONLY MODE. Safe for all Omni Gateway LLM proxies.
+        The compliance instruction is injected into every request. Response streams
+        through without buffering — only X-Explainability-Trace-Id header is added.
+        Use this mode with Omni Gateway (prevents 504 timeout from chunked responses).
+        true = FULL VALIDATION MODE. Buffers and validates the response body.
+        Only safe when the upstream returns a finite response with Content-Length
+        (e.g., self-hosted LLM, or direct OpenAI integration without proxy chunking).
+      default: false
+
+  required:
+    - explainability_fields

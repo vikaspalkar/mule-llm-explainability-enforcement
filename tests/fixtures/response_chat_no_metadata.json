@@ -1,0 +1,21 @@
+{
+  "id": "chatcmpl-def456",
+  "object": "chat.completion",
+  "created": 1720000001,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "I have reviewed loan application APP-2024-8871. The applicant has a credit score of 720 and annual income of $85,000. The $50,000 loan for home renovation appears to be a reasonable request. I recommend approving this application."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 200,
+    "completion_tokens": 65,
+    "total_tokens": 265
+  }
+}

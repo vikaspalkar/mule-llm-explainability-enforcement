@@ -1,0 +1,18 @@
+{
+  "id": "msg_01XFDUDYJgAACzvnptvVoYEL",
+  "type": "message",
+  "role": "assistant",
+  "model": "claude-3-5-sonnet-20241022",
+  "content": [
+    {
+      "type": "text",
+      "text": "Based on my analysis of the loan application, I recommend approval.\n\n```json\n{\n  \"explainability_metadata\": {\n    \"decision_outcome\": \"approved\",\n    \"confidence_score\": 0.91,\n    \"reasoning\": [\n      \"Credit score 720 is above the minimum threshold\",\n      \"Income-to-loan ratio is favorable at 1.7x\"\n    ],\n    \"human_review_required\": false\n  }\n}\n```"
+    }
+  ],
+  "stop_reason": "end_turn",
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 300,
+    "output_tokens": 120
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "chatcmpl-stream123",
+  "object": "chat.completion.chunk",
+  "created": 1720000002,
+  "model": "gpt-4o",
+  "choices": [
+    {
+      "index": 0,
+      "delta": {
+        "role": "assistant",
+        "content": "Based on my analysis"
+      },
+      "finish_reason": null
+    }
+  ]
+}
